@@ -38,3 +38,39 @@ int main(){
     printField(&board);
     return 0;
 }
+
+typedef enum {
+    dead = 0,
+    alive = 1
+} state;
+
+typedef struct Mask {
+    int **mask;
+    int width;
+    int height;
+} mask;
+
+typedef struct Ceil {
+    int state;
+    int** mask;
+    int maskWidth;
+    int maskHeight;
+} ceil;
+
+ceil* newCeil(state state, int** mask, int maskWidth, int maskHieght) {
+    ceil* ceil = malloc(sizeof(ceil));
+    ceil->state = state;
+    ceil->mask = mask;
+    ceil->maskWidth = maskHieght;
+    ceil->maskHeight = maskWidth;
+    return ceil;
+}
+
+void deleteCeil(ceil* ceil) {
+    free(ceil);
+}
+
+int coutNeighbours(ceil* ceil) {
+    
+}
+int live(ceil* ceil);
