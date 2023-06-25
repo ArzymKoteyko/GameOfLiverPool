@@ -3,6 +3,12 @@ typedef enum {
     alive = 1
 } state;
 
+typedef struct Mask {
+    int **mask;
+    int width;
+    int height;
+} mask;
+
 typedef struct Ceil {
     int state;
     int** mask;
