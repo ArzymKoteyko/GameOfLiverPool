@@ -1,76 +1,73 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-#define HEIGHT 50
+#define HEIGHT 30
 #define WIDTH 50
 
-// void createField(int board[HEIGHT][WIDTH]){
-//     for (int i = 0; i < HEIGHT; i++){
-//         for (int j = 0; j < WIDTH; j++){
-//             printf(board[i][j] ? "*":" ");
-//         }
-//     }
-// }
-void printField(int** board){
-    for (size_t i = 0; i < HEIGHT; i++) {
-        for (size_t j = 0; j < WIDTH; j++) {
-            printf(board[i][j]);
-        }
-    }
-}
-void createField(int** board){
-    // *board = (int *)malloc(sizeof(int) * WIDTH * HEIGHT);
-    *board = malloc(sizeof(int*) * WIDTH + sizeof(int) * WIDTH * HEIGHT);
-    for (size_t i = 0; i < HEIGHT; i++) {
-        for (size_t j = 0; j < WIDTH; j++) {
-            (*board)[i * WIDTH + j] = rand() % 2;
-        }
-    }
-    // *board = (int**)malloc(sizeof(int*) * width);
-    // for (i = 0; i < width; i++) {
-    //     (*board)[i] = (int*)malloc(sizeof(int) * height);
-    // }
-}
-
-int main(){
-    int* board = 0;
-
-    createField(&board);
-    printField(&board);
-    return 0;
-}
-
-typedef enum {
-    dead = 0,
-    alive = 1
-} state;
+typedef enum { dead = 0, alive = 1 } state;
 
 typedef struct Mask {
-    int **mask;
-    int width;
-    int height;
+  int **mask;
+  int width;
+  int height;
 } mask;
 
 typedef struct Ceil {
-    int state;
-    int** mask;
-    int maskWidth;
-    int maskHeight;
+  int state;
+  mask mask;
 } ceil;
 
-ceil* newCeil(state state, int** mask, int maskWidth, int maskHieght) {
-    ceil* ceil = malloc(sizeof(ceil));
-    ceil->state = state;
-    ceil->mask = mask;
-    ceil->maskWidth = maskHieght;
-    ceil->maskHeight = maskWidth;
-    return ceil;
+ceil *newCeil(state, mask);
+void deleteCeil(ceil *);
+int coutNeighbours(ceil *ceil);
+int live(ceil *ceil);
+
+ceil ***createField(void);
+void deleteField(ceil ***);
+void printField(ceil ***);
+
+int main() {
+  ceil ***field = createField();
+  printField(field);
+  deleteField(field);
+  return 0;
 }
 
-void deleteCeil(ceil* ceil) {
-    free(ceil);
+ceil ***createField(void) {
+  int rowMask[3][3] = {{1, 1, 1}, {1, 0, 1}, {1, 1, 1}};
+  mask mask = {(int **)rowMask, 3, 3};
+  ceil ***field =
+      malloc(sizeof(ceil **) * WIDTH + sizeof(ceil *) * WIDTH * HEIGHT);
+  ceil **ptr = (ceil **)(field + WIDTH);
+  for (int i = 0; i < WIDTH; i++) {
+    field[i] = (ptr + HEIGHT * i);
+  }
+  for (size_t y = 0; y < HEIGHT; y++) {
+    for (size_t x = 0; x < WIDTH; x++) {
+      field[x][y] = newCeil(rand() % 2, mask);
+    }
+  }
+  return field;
 }
 
-int coutNeighbours(ceil* ceil) {
-    
+void deleteField(ceil ***field) { free(field); }
+
+void printField(ceil ***field) {
+  for (size_t y = 0; y < HEIGHT; y++) {
+    for (size_t x = 0; x < WIDTH; x++) {
+      printf("%i", field[x][y]->state);
+    }
+    printf("\n");
+  }
 }
-int live(ceil* ceil);
+
+ceil *newCeil(state state, mask mask) {
+  ceil *ceil = malloc(sizeof(ceil));
+  ceil->state = state;
+  ceil->mask = mask;
+  return ceil;
+}
+
+void deleteCeil(ceil *ceil) { free(ceil); }
+
+int coutNeighbours(ceil *ceil) {}
